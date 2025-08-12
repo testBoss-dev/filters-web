@@ -23,21 +23,30 @@
 
     async function initDeepAR() {
       deepAR = await deepar.initialize({
-        licenseKey: "YOUR_LICENSE_KEY_HERE",  // Replace with your DeepAR license key
+        licenseKey: "d9d76c4291a877dfd04c83997cfe75f64e799ae46d3b85acbccf07efb1f1bd6693d01aa488cef941",  // Replace with your license key
         canvas: document.getElementById("deepar-canvas"),
         rootPath: "https://cdn.deepar.ai/js/",
-        effect: "filters/hair.deepar",  // default filter
+        effect: "https://firebasestorage.googleapis.com/v0/b/readicart-442b2.firebasestorage.app/o/deepar%20filters%2FNeon_Devil_Horns.deepar?alt=media&token=634e74ba-b27c-425c-9055-2b721406bb95", // Default Firebase hosted filter
       });
     }
 
     initDeepAR();
 
-    // Listen for messages from React Native
     window.document.addEventListener("message", (event) => {
       try {
         const data = JSON.parse(event.data);
         if (data.filter && deepAR) {
-          deepAR.switchEffect(0, "slot", `filters/${data.filter}.deepar`);
+          const filterFirebaseURLs = {
+            hair: "https://firebasestorage.googleapis.com/v0/b/readicart-442b2.firebasestorage.app/o/deepar%20filters%2FNeon_Devil_Horns.deepar?alt=media&token=634e74ba-b27c-425c-9055-2b721406bb95",
+            beard: "https://firebasestorage.googleapis.com/v0/b/readicart-442b2.firebasestorage.app/o/deepar%20filters%2FYour_Beard_Filter.deepar?alt=media&token=YOUR_TOKEN",
+            bald: "https://firebasestorage.googleapis.com/v0/b/readicart-442b2.firebasestorage.app/o/deepar%20filters%2FBald_Filter.deepar?alt=media&token=YOUR_TOKEN"
+          };
+          const filterURL = filterFirebaseURLs[data.filter];
+          if (filterURL) {
+            deepAR.switchEffect(0, "slot", filterURL);
+          } else {
+            console.warn("Filter not found:", data.filter);
+          }
         }
       } catch (e) {
         console.error("Invalid message received", e);
