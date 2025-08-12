@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DeepAR Web SDK in React Native WebView</title>
+  <script src="https://cdn.deepar.ai/js/deepar.js"></script>
+  <style>
+    body, html {
+      margin: 0; padding: 0; overflow: hidden;
+      background: black;
+      height: 100%; width: 100%;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="deepar-canvas"></canvas>
+  <script>
+    let deepAR;
+
+    async function initDeepAR() {
+      deepAR = await deepar.initialize({
+        licenseKey: "YOUR_LICENSE_KEY_HERE",  // Replace with your DeepAR license key
+        canvas: document.getElementById("deepar-canvas"),
+        rootPath: "https://cdn.deepar.ai/js/",
+        effect: "filters/hair.deepar",  // default filter
+      });
+    }
+
+    initDeepAR();
+
+    // Listen for messages from React Native
+    window.document.addEventListener("message", (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.filter && deepAR) {
+          deepAR.switchEffect(0, "slot", `filters/${data.filter}.deepar`);
+        }
+      } catch (e) {
+        console.error("Invalid message received", e);
+      }
+    });
+  </script>
+</body>
+</html>
